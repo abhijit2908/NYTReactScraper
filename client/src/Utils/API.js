@@ -1,5 +1,5 @@
-import request from 'request';
-//import axios from 'axios';
+//import request from 'request';
+import axios from 'axios';
 
 export default {
 
@@ -7,14 +7,14 @@ export default {
 
         if (queryTerm.topic) {
 
-            return request.get("https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=" + "35fbaef7c1814ef59add17fbceef1719&q=" + queryTerm.topic)
+            return axios.get("https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=" + "35fbaef7c1814ef59add17fbceef1719&q=" + queryTerm.topic)
 
 
         }
 
 
         else if (queryTerm.topic && queryTerm.startYear) {
-            return request.get({
+            return axios.get({
                 url: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
                 qs: {
                     'api-key': "35fbaef7c1814ef59add17fbceef1719",
@@ -25,7 +25,7 @@ export default {
         }
 
         else if (queryTerm.topic && queryTerm.startYear && queryTerm.endYear) {
-            return request.get({
+            return axios.get({
                 url: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
                 qs: {
                     'api-key': "35fbaef7c1814ef59add17fbceef1719",
@@ -35,16 +35,32 @@ export default {
                 }
             })
         }
+    },
+
+
+    saveArticles: function (savedArticle) {
+
+           
+
+       return  axios.post("/api/savedArticle",savedArticle)
+        .then(response => { 
+    console.log(response)
+})
+.catch(error => {
+    console.log(error.response)
+});
+
+
+
+    },
+
+
+    loadArticles: function(){
+        return axios.get("api/savedArticle")
+    },
+
+    deleteArticle: function(id) {
+        return axios.delete("/api/savedArticle/" + id);
     }
 
-
-    // saveArticles: function (savedArticle) {
-
-
-    //     return axios.post("/api/savedArticle", savedArticle);
-
-
-
-    //}
-
-}
+};

@@ -23,8 +23,8 @@ var articleSchema = new Schema({
 		default:false
 	},
 
-	date: {
-		type:Date,
+	pub_date: {
+		type:String,
 		required:true
 	}
 

@@ -18,8 +18,34 @@ class SearchForm extends Component{
         startYear:"",
         endYear:"",
         result:[],
-    savedArticle:[]
+        savedArticle:[]
       };
+
+
+
+        componentDidMount() {
+    this.loadArticles();
+  }
+
+  loadArticles = () => {
+    API.loadArticles()
+      .then(res =>
+        //console.log(res.data)
+        this.setState({ savedArticle: res.data,topic: "",
+          startYear: "",
+          endYear: ""})
+      )
+      .catch(err => console.log(err));
+  };
+
+  deleteArticle = id => {
+    API.deleteArticle(id)
+      .then(res => this.loadArticles())
+      .catch(err => console.log(err));
+  };
+
+
+
     
       handleInputChange = event => {
         const{name,value} = event.target;
@@ -41,14 +67,37 @@ class SearchForm extends Component{
       .then(res => {
         console.log(res.data);
         this.setState({
-          results: res.data.response.docs,
-          topic: "",
-          startYear: "",
-          endYear: ""
-        })
+          result: res.data.response.docs,
+        },this.loadArticles())
       })
       .catch(err => console.log(err));
       };
+
+
+      handleSave = (resultrow) => {
+
+    var savedArticle = {};
+
+    
+    savedArticle.title = resultrow.snippet;
+    savedArticle.url = resultrow.web_url;
+    savedArticle.pub_date = resultrow.pub_date;
+    savedArticle.saved = true;
+    console.log(savedArticle);
+    //let unsavedArticles = this.state.result.filter(article => article._id !== resultrow._id)
+
+    API.saveArticles(savedArticle)
+      .then(res => this.setState({ savedArticle: savedArticle },this.loadArticles()))
+      .catch(err => console.log("error is " + err));
+
+    
+
+  }
+
+
+
+
+
 
       render(){
         return(
@@ -68,12 +117,14 @@ class SearchForm extends Component{
         <Container title="Results" body="body">
         {this.state.result.length ? (
         <List>
-          {this.state.result.map(resultrow =>(
-          <ListItem>
-            {resultrow}
-            <SaveBtn value="Save"/>
-          </ListItem>
-          ))}
+          {this.state.result.map(resultRow =>(
+          <ListItem key = {resultRow._id}>
+                  {resultRow.snippet}<br />
+              {resultRow.web_url}<br />
+              {resultRow.pub_date}<br />   
+                  <SaveBtn onClick={() => this.handleSave(resultRow)} value="Save" />
+                </ListItem>
+                ))}
         </List>
         ):(<h3>No results to Display</h3>)}
          </Container>
@@ -81,9 +132,11 @@ class SearchForm extends Component{
         {this.state.savedArticle.length ? (
           <List>
             {this.state.savedArticle.map(resultrow =>(
-            <ListItem>
-              {resultrow}
-              <RemoveBtn value="Remove"/>
+            <ListItem key = {resultrow._id}>
+              {resultrow.title}<br />
+              {resultrow.url}<br />
+              {resultrow.pub_date}<br />
+              <RemoveBtn onClick={() => this.deleteArticle(resultrow._id)} value="Remove"/>
             </ListItem>
             ))}
           </List>
