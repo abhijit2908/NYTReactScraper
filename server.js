@@ -7,6 +7,7 @@ const request = require("request");
 const PORT = process.env.PORT || 3001;
 const db=require("./models/Articles.js");
 const router = require("express").Router();
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/nytreact";
 
 
 // Configure body parser for AJAX requests
@@ -20,12 +21,7 @@ app.use(routes);
 // Set up promises with mongoose
 mongoose.Promise = global.Promise;
 // Connect to the Mongo DB
-mongoose.connect(
- process.env.MONGODB_URI || "mongodb://localhost/nytreact",
- {
-   useMongoClient: true
- }
-);
+mongoose.connect(MONGODB_URI,{useMongoClient: true});
 
 // Start the API server
 app.listen(PORT, function() {
