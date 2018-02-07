@@ -78,16 +78,20 @@ class SearchForm extends Component{
 
     var savedArticle = {};
 
-    
+    savedArticle._id=resultrow._id
     savedArticle.title = resultrow.snippet;
     savedArticle.url = resultrow.web_url;
     savedArticle.pub_date = resultrow.pub_date;
     savedArticle.saved = true;
-    console.log(savedArticle);
-    //let unsavedArticles = this.state.result.filter(article => article._id !== resultrow._id)
+    
+    let unsavedArticles = this.state.result.filter(article => article._id !== savedArticle._id);
+    console.log(unsavedArticles);
+
 
     API.saveArticles(savedArticle)
-      .then(res => this.setState({ savedArticle: savedArticle },this.loadArticles()))
+      .then(res => this.setState({ savedArticle: savedArticle, result:unsavedArticles},
+        this.loadArticles()
+        ))
       .catch(err => console.log("error is " + err));
 
     
